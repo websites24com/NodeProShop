@@ -1,7 +1,9 @@
-import React from 'react'
-import { Container } from 'react-bootstrap'
-import Header from './components/Header'
-import Footer from './components/Footer'
+import React from 'react';
+import { Container } from 'react-bootstrap';
+import { Outlet } from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import HomeScreen from './screens/HomeScreen';
 
 
 const App = () => {
@@ -9,7 +11,9 @@ const App = () => {
     <>
     <Header />
     <main className='py-3'>
-       <h1>Welcome to Pro Shop</h1> 
+       <Container>
+       <Outlet />
+       </Container>
     </main>
     <Footer /> 
    
