@@ -16,7 +16,7 @@ const { id:productId } = useParams();
 
 useEffect(() => {
     const fetchProduct = async() => {
-      const { data } = await axios.get('/api/products/:id');
+      const { data } = await axios.get(`/api/products/${productId}`);
       setProduct(data)
     };
 
