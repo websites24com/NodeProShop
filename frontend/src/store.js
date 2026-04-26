@@ -1,11 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./slices/apiSlice.js";
 import cartSliceReducer  from './slices/cartSlice.js'
+import authSliceReducer from './slices/authSlice.js'
 
 const store = configureStore({
     reducer: {
+        // 👉 When you do not specify anything, Redux Toolkit automatically sets: apiSlice.reducerPath === 'api'
         [apiSlice.reducerPath]: apiSlice.reducer,
         cart: cartSliceReducer,
+        auth: authSliceReducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware),
     devTools: true,
