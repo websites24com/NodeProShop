@@ -26,10 +26,10 @@ const getPayPalAccessToken = async () => {
 
     const data = await response.json();
 
-    console.log('PAYPAL TOKEN STATUS:', response.status);
+    // console.log('PAYPAL TOKEN STATUS:', response.status);
 
     if (!response.ok) {
-        console.log('PAYPAL TOKEN ERROR:', data);
+        // console.log('PAYPAL TOKEN ERROR:', data);
         throw new Error(data.error_description || 'Could not get PayPal access token');
     }
 
@@ -40,8 +40,8 @@ const getPayPalAccessToken = async () => {
 // @route POST /api/orders/:id/paypal/create
 // @access Private
 const createPayPalOrder = asyncHandler(async (req, res) => {
-    console.log('CREATE PAYPAL ORDER START');
-    console.log('ORDER ID FROM PARAMS:', req.params.id);
+    // console.log('CREATE PAYPAL ORDER START');
+    // console.log('ORDER ID FROM PARAMS:', req.params.id);
 
     const order = await Order.findById(req.params.id);
 
@@ -52,8 +52,8 @@ const createPayPalOrder = asyncHandler(async (req, res) => {
 
     const paypalAmount = Number(order.totalPrice).toFixed(2);
 
-    console.log('ORDER TOTAL PRICE FROM DB:', order.totalPrice);
-    console.log('PAYPAL AMOUNT:', paypalAmount);
+    // console.log('ORDER TOTAL PRICE FROM DB:', order.totalPrice);
+    // console.log('PAYPAL AMOUNT:', paypalAmount);
 
     if (!paypalAmount || Number(paypalAmount) <= 0 || Number.isNaN(Number(paypalAmount))) {
         res.status(400);
@@ -83,8 +83,8 @@ const createPayPalOrder = asyncHandler(async (req, res) => {
 
     const data = await response.json();
 
-    console.log('CREATE PAYPAL RESPONSE STATUS:', response.status);
-    console.log('CREATE PAYPAL RESPONSE DATA:', data);
+    // console.log('CREATE PAYPAL RESPONSE STATUS:', response.status);
+    // console.log('CREATE PAYPAL RESPONSE DATA:', data);
 
     if (!response.ok) {
         res.status(500);
@@ -102,9 +102,9 @@ const createPayPalOrder = asyncHandler(async (req, res) => {
 // @route POST /api/orders/:id/paypal/capture
 // @access Private
 const capturePayPalOrder = asyncHandler(async (req, res) => {
-    console.log('CAPTURE PAYPAL ORDER START');
-    console.log('ORDER ID FROM PARAMS:', req.params.id);
-    console.log('REQUEST BODY:', req.body);
+    // console.log('CAPTURE PAYPAL ORDER START');
+    // console.log('ORDER ID FROM PARAMS:', req.params.id);
+    // console.log('REQUEST BODY:', req.body);
 
     const { paypalOrderId } = req.body;
 
@@ -135,8 +135,8 @@ const capturePayPalOrder = asyncHandler(async (req, res) => {
 
     const data = await response.json();
 
-    console.log('CAPTURE PAYPAL RESPONSE STATUS:', response.status);
-    console.log('CAPTURE PAYPAL RESPONSE DATA:', data);
+    // console.log('CAPTURE PAYPAL RESPONSE STATUS:', response.status);
+    // console.log('CAPTURE PAYPAL RESPONSE DATA:', data);
 
     if (!response.ok) {
         res.status(500);
@@ -242,14 +242,27 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 // @route PUT /api/orders/:id/deliver
 // @access Private/Admin
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
-    res.send('update order to delivered');
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+
+        const updateOrder = await order.save();
+
+        res.status(200).json(updateOrder)
+    } else {
+        res.status(404);
+        throw new Error('Order not found')
+    }
 });
 
 // @desc Get all orders
 // @route GET /api/orders
 // @access Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-    res.send('get all orders');
+    const orders = await Order.find({}).populate('user', 'id name');
+    res.status(200).json(orders);
 });
 
 export {
@@ -261,4 +274,5 @@ export {
     getOrders,
     createPayPalOrder,
     capturePayPalOrder
+    
 };
