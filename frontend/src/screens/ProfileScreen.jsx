@@ -26,13 +26,19 @@ const ProfileScreen = () => {
     const {data: orders, isLoading, error } = useGetMyOrdersQuery();
 
     useEffect(() => {
+    if (userInfo) {
         setName(userInfo.name);
         setEmail(userInfo.email)
-    }, [userInfo, userInfo.name, userInfo.email] )
+    }
+}, [userInfo])
 
     const submitHandler = async (e) =>
     {
         e.preventDefault()
+        if (!userInfo) {
+        toast.error('User not loaded')
+        return
+}
         if (password !== confirmPassword) {
             toast.error('Password do not match')
         } else {
@@ -78,7 +84,7 @@ const ProfileScreen = () => {
                 type="password"
                 placeholder='Enter password'
                 value={password}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 >
                 </Form.Control>
             </Form.Group>

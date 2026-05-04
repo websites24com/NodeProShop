@@ -136,33 +136,24 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @desc Get all users
 // @route GET  /api/users
 // @acess Private/ADMIN
-
 const getUsers = asyncHandler(async (req, res) => {
-   const users = await User.find({});
-   res.status(200).json(users);
+  const users = await User.find({}).select('-password');
+  res.status(200).json(users);
 })
 
 // @desc Get user by id 
 // @route GET  /api/users/:id
 // @acess Private/ADMIN
-
 const getUserByID = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id).select('-password');
+  const user = await User.findById(req.params.id).select('-password');
 
-    if(user) {
-        // Check if the requested user is an admin
-        if(user.isAdmin) {
-            res.status(403);
-            throw new Error('Cannot delete admin user');
-        }
-        //_id: user_id means
-        await user.deleteOne({_id: user._id});
-        res.status(200).json({message: 'User removed successfully'});
-    } else {
-        res.status(404);
-        throw new Error('User not found');
-    }
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  return res.status(200).json(user);
 });
+
 
 // @desc Update user
 // @route PUT  /api/users/:id
